@@ -2,9 +2,60 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="css/finalooks.css">
     <title></title>
   </head>
+
   <body>
 
+<header>
+  <div class="container center">
+    <h1>Welcome to the NotePad</h1>
+  </div>
+</header>
+<!--Menu option for NotePad-->
+<div class="container center">
+  <div class="row">
+    <h1>Get Started</h1>
+<!--Create name of Note-->
+    <input id="title" type="text" placeholder="Enter Title">
+<!--Select Importance of Note by color-->
+    <select id="level">
+    <option value="0">-Status Code-</option>
+    <option value="1">Red</option>
+    <option value="2">Yellow</option>
+    <option value="3">Green</option>
+    </select>
+    <input type="button" value="Submit" onclick="submitInput">
+  </div>
+</div>
+
+
+<div id="message" class="container"></div>
+
+<div id="result" class="container">
+<p></p>
+</div>
+
+
+
+<script src="http://cdn.jsdelivr.net/alasql/latest/alasql.min.js"></script>
+<script>
+var db = new alasql.Database();
+//Create table for title, date, message, and importance
+  db.exec(`INSERT INTO files VALUES(${id} , "${title}", "${new Date().toLocaleTimeString()}" ,"${message}", "${level}")`);
+//List of functions
+function submitInput(){
+  var title =document.getElementById("title").value;
+  var message =document.getElementById("message").value;
+  var importance =document.getElementById("level").value;
+
+  // var id = db.exec('SELECT * FROM files').length;
+
+
+}
+</script>
+
   </body>
+
 </html>
