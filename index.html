@@ -7,28 +7,7 @@
   </head>
 
   <body>
-  	
-
-		<h1>NoteBook</h1>
-
-		<h2>Note 1</h2>
-
-	<textarea id="advanced" name="advanced"
-                  rows="3" cols="60" maxlength="200"
-                  wrap="hard">
-
-        </textarea>
-
-
-        <h2>Note 2</h2>
-
-
-        <textarea id="advanced" name="advanced"
-                  rows="3" cols="60 " maxlength="200"
-                  wrap="hard">
-
-        </textarea>
-
+  
 <header>
   <div class="container center">
     <h1>Welcome to the NotePad</h1>
@@ -42,39 +21,60 @@
     <input id="title" type="text" placeholder="Enter Title">
 <!--Select Importance of Note by color-->
     <select id="level">
-    <option value="0">-Status Code-</option>
-    <option value="1">Red</option>
-    <option value="2">Yellow</option>
-    <option value="3">Green</option>
+    <option>-Status Code-</option>
+    <option value="red">Red</option>
+    <option value="yellow">Yellow</option>
+    <option value="green">Green</option>
     </select>
-    <input type="button" value="Submit" onclick="submitInput">
+    <input type="button" value="Submit" onclick="uploadNote()">
   </div>
 </div>
 
-
-<div id="message" class="container"></div>
-
-<div id="result" class="container">
+<div id="result" class="container center">
 <p></p>
 </div>
+<div class="container center">
+  <textarea id="text" name="advanced"
+rows="3" cols="60" maxlength="200"
+wrap="hard">
 
+</textarea>
+</div> 
 
+<div id="show">
+
+</div>
 
 <script src="http://cdn.jsdelivr.net/alasql/latest/alasql.min.js"></script>
 <script>
 var db = new alasql.Database();
 //Create table for title, date, message, and importance
-  db.exec(`INSERT INTO files VALUES(${id} , "${title}", "${new Date().toLocaleTimeString()}" ,"${message}", "${level}")`);
-//List of functions
-function submitInput(){
-  var title =document.getElementById("title").value;
-  var message =document.getElementById("message").value;
-  var importance =document.getElementById("level").value;
+db.exec(`CREATE TABLE notes (id int PRIMARY KEY, title varchar(255), color varchar(255), message varchar(255))`);
+//List of functions and variables
+var noteBox = [];
 
-  // var id = db.exec('SELECT * FROM files').length;
+//Sorts the saved notes by importance.
 
+// function storeNote(){
+// note.sort();
+// document.getElementById("color")
+// }
 
+function uploadNote(){
+
+  var id = db.exec('SELECT * FROM notes').length;
+  var title = document.getElementById("title").value;
+  var message = document.getElementById("text").value;
+  var color = document.getElementById("level").value;
+  alert("Note has been saved");
+
+  console.log(title, message, color);
+  db.exec(`INSERT INTO notes VALUES(${id}, "${title}", "${color}" ,"${message}")`);
+var result = db.exec(`SELECT * FROM notes`);
+document.getElementById("text").classList.add("red")
+document.getElementById("text").innerHTML = text;
 }
+
 </script>
 
   </body>
