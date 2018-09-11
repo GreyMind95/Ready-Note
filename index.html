@@ -6,7 +6,7 @@
     <title></title>
   </head>
 
-  <body>
+  <body onload="retrieveNote()">
   
 <header>
   <div class="container center">
@@ -14,66 +14,132 @@
   </div>
 </header>
 <!--Menu option for NotePad-->
-<div class="container center">
-  <div class="row">
-    <h1>Get Started</h1>
-<!--Create name of Note-->
-    <input id="title" type="text" placeholder="Enter Title">
-<!--Select Importance of Note by color-->
-    <select id="level">
-    <option>-Status Code-</option>
-    <option value="red">Red</option>
-    <option value="yellow">Yellow</option>
-    <option value="green">Green</option>
-    </select>
-    <input type="button" value="Submit" onclick="uploadNote()">
-  </div>
-</div>
+<div class="container-div">
+    <div class="container left">
+      <div class="row">
+        <!--Input Section-->
+        <div class="col-5">
+        <h1>Start New Note</h1>
+    <!--Create name of Note-->
+        <input id="nameTitle" type="text" placeholder="Enter Title">
+    <!--Select Importance of Note by color-->
+        <select id="colorCode">
+        <option>-Status Code-</option>
+        <option value="red">Red</option>
+        <option value="yellow">Yellow</option>
+        <option value="green">Green</option>
+        <option value="gray">Gray</option>
+        </select>
+        <input type="button" value="Submit" onclick="uploadNote()">
+        <br>
+        <div class="col">
+        <textarea id="textBox" name="advanced"
+    rows="10" cols="60" maxlength="200"
+    wrap="hard">
+    </textarea>
+    </div>
+      </div>
+       </div>
+        </div>
+        
+    <div class="container-right">
+        <div class="row">
+            <!--Update Section-->
+            <div class="col-5">
+            <h1>Retrieve Note Section</h1>
+        <!--Search name of Note-->
+        <!--Change Importance of Note by color-->
+        <select id="noteChoices">
+            <option>-Select-</option>
+            <option value="title">Title</option>
+            <option value="color">Color</option>
+            <option value="time">Time</option>
+            </select>
+            <input id="searchTitle" type="text" placeholder="Enter Selection">
+            <input type="button" value="Submit" placeholder="Submit" onclick=orderNotes()>
+            <br>
+          </div>
+           </div>
+            </div>
+             </div>
 
-<div id="result" class="container center">
-<p></p>
-</div>
-<div class="container center">
-  <textarea id="text" name="advanced"
-rows="3" cols="60" maxlength="200"
-wrap="hard">
 
-</textarea>
-</div> 
-
-<div id="show">
-
+<div id="showNote" class="container left size">
+  
 </div>
 
 <script src="http://cdn.jsdelivr.net/alasql/latest/alasql.min.js"></script>
 <script>
 var db = new alasql.Database();
 //Create table for title, date, message, and importance
-db.exec(`CREATE TABLE notes (id int PRIMARY KEY, title varchar(255), color varchar(255), message varchar(255))`);
-//List of functions and variables
-var noteBox = [];
+db.exec(`CREATE TABLE notes (id int PRIMARY KEY, title varchar(255), color varchar(255), message varchar(255), date varchar(225))`);
 
 //Sorts the saved notes by importance.
+//List of functions and variables
 
-// function storeNote(){
-// note.sort();
-// document.getElementById("color")
-// }
 
 function uploadNote(){
-
+  
   var id = db.exec('SELECT * FROM notes').length;
-  var title = document.getElementById("title").value;
-  var message = document.getElementById("text").value;
-  var color = document.getElementById("level").value;
+  var title = document.getElementById("nameTitle").value;
+  var message = document.getElementById("textBox").value;
+  var color = document.getElementById("colorCode").value;
+  var text = document.getElementById("textBox").value;
+  var date = new Date().toString();
   alert("Note has been saved");
-
-  console.log(title, message, color);
-  db.exec(`INSERT INTO notes VALUES(${id}, "${title}", "${color}" ,"${message}")`);
+console.log(title, color, text);
+  db.exec(`INSERT INTO notes VALUES(${id}, "${title}", "${color}" ,"${message}", "${date}")`);
 var result = db.exec(`SELECT * FROM notes`);
-document.getElementById("text").classList.add("red")
-document.getElementById("text").innerHTML = text;
+localStorage.noteBox = JSON.stringify(result);
+
+console.log(JSON.stringify(result));
+//Creates new div for each entry
+var newDiv = document.createElement("div");
+newDiv.className = "row";
+newDiv.style.backgroundColor = color;
+newDiv.innerHTML += `<p>${title}</p>`
+// newDiv.innerHTML += `<p>${color}</p>`
+newDiv.innerHTML += `<p>${text}</p>`
+newDiv.innerHTML += `<p>${date}</p>`
+//Creates new div for next entry
+document.getElementById("showNote").appendChild(newDiv);  
+
 }
+//Loads stored entries onto webpage
+function retrieveNote(){
+  if(localStorage.noteBox != undefined){
+   var noteBox = JSON.parse(localStorage.noteBox);
+   for(var i=0; i < noteBox.length; i++){
+      var newDiv = document.createElement("div");
+        newDiv.className = "row";
+        newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
+      //Creates new div for next entry
+      document.getElementById("showNote").appendChild(newDiv);
+   }
+  }
+}
+
+function orderNotes(){
+  var choices = document.getElementById("noteChoices").value;
+  var uchoice = document.getElementById("searchTitle").value;
+  var noteBox = JSON.parse(localStorage.noteBox);
+  document.getElementById("showNote").innerHTML = "";
+   for(var i=0; i < noteBox.length; i++){
+     if(noteBox[i][choices] == uchoice){
+        var newDiv = document.createElement("div");
+        newDiv.className = "row";
+        newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
+        //Creates new div for next entry
+        document.getElementById("showNote").appendChild(newDiv);
+    }  
+   }
+  }
 
 </script>
 
