@@ -81,130 +81,160 @@
 <div id="showNote" class="container left size"></div>
 
 <script src="http://cdn.jsdelivr.net/alasql/latest/alasql.min.js"></script>
-    <script>
-    var db = new alasql.Database();
-    //Create table for title, date, message, and importance
-    db.exec(`CREATE TABLE notes (id int PRIMARY KEY, title varchar(255), color varchar(255), message varchar(255), date varchar(225))`);
+<script>
+var db = new alasql.Database();
+//Create table for title, date, message, and importance
+db.exec(`CREATE TABLE notes (id int PRIMARY KEY, title varchar(255), color varchar(255), message varchar(255), date varchar(225))`);
 
-      if(localStorage.noteBox != undefined){
-        var store = JSON.parse(localStorage.noteBox);
 
-        for (var i=0; i < store.length; i++){
-          db.exec(`INSERT INTO notes VALUES(${store[i].id}, "${store[i].title}", "${store[i].color}" ,"${store[i].message}", "${store[i].date}")`);
-        }
-      }
+  if(localStorage.noteBox != undefined){
+    var store = JSON.parse(localStorage.noteBox);
 
-    //Sorts the saved notes by importance.
-    //List of functions and variables
-
-    function uploadNote(){
-      
-      var id = db.exec('SELECT * FROM notes').length;
-      var title = document.getElementById("nameTitle").value;
-      var message = document.getElementById("textBox").value;
-      var color = document.getElementById("colorCode").value;
-      var text = document.getElementById("textBox").value;
-      var date = new Date().toString();
-      alert("Note has been saved");
-    console.log(title, color, text);
-      db.exec(`INSERT INTO notes VALUES(${id}, "${title}", "${color}" ,"${message}", "${date}")`);
-    var result = db.exec(`SELECT * FROM notes`);
-    localStorage.noteBox = JSON.stringify(result);
-
-    console.log(JSON.stringify(result));
-    //Creates new div for each entry
-    var newDiv = document.createElement("div");
-    newDiv.className = "row";
-    newDiv.style.backgroundColor = color;
-    newDiv.innerHTML += `<p>${title}</p>`
-    // newDiv.innerHTML += `<p>${color}</p>`
-    newDiv.innerHTML += `<p>${text}</p>`
-    newDiv.innerHTML += `<p>${date}</p>`
-    //Creates new div for next entry
-    document.getElementById("showNote").appendChild(newDiv);  
-
+    for (var i=0; i < store.length; i++){
+      db.exec(`INSERT INTO notes VALUES(${store[i].id}, "${store[i].title}", "${store[i].color}" ,"${store[i].message}", "${store[i].date}")`);
     }
-    //Loads stored entries onto webpage
-    function retrieveNote(){
-      if(localStorage.noteBox != undefined){
-      var noteBox = JSON.parse(localStorage.noteBox);
+  }
 
-      document.getElementById("showNote").innerHTML = "";
 
-      for(var i=0; i < noteBox.length; i++){
-          var newDiv = document.createElement("div");
-            newDiv.className = "row";
-            newDiv.style.backgroundColor = noteBox[i].color;
-            newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
-            newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
-            newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
-          //Creates new div for next entry
-          document.getElementById("showNote").appendChild(newDiv);
-        }
-      }
+
+//Sorts the saved notes by importance.
+//List of functions and variables
+
+
+function uploadNote(){
+  
+  var id = db.exec('SELECT * FROM notes').length;
+  var title = document.getElementById("nameTitle").value;
+  var message = document.getElementById("textBox").value;
+  var color = document.getElementById("colorCode").value;
+  var text = document.getElementById("textBox").value;
+  var date = new Date().toString();
+  alert("Note has been saved");
+console.log(title, color, text);
+  db.exec(`INSERT INTO notes VALUES(${id}, "${title}", "${color}" ,"${message}", "${date}")`);
+var result = db.exec(`SELECT * FROM notes`);
+localStorage.noteBox = JSON.stringify(result);
+
+console.log(JSON.stringify(result));
+//Creates new div for each entry
+var newDiv = document.createElement("div");
+newDiv.id = id;
+newDiv.className = "row";
+newDiv.style.backgroundColor = color;
+newDiv.innerHTML += `<p>${title}</p>`
+// newDiv.innerHTML += `<p>${color}</p>`
+newDiv.innerHTML += `<p>${text}</p>`
+newDiv.innerHTML += `<p>${date}</p>`
+//Creates new div for next entry
+document.getElementById("showNote").appendChild(newDiv);  
+
+}
+//Loads stored entries onto webpage
+function retrieveNote(){
+  if(localStorage.noteBox != undefined){
+   var noteBox = JSON.parse(localStorage.noteBox);
+
+   document.getElementById("showNote").innerHTML = "";
+
+
+   for(var i=0; i < noteBox.length; i++){
+      var newDiv = document.createElement("div");
+      newDiv.id = noteBox[i].id
+        newDiv.className = "row";
+        newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
+        newDiv.innerHTML += `<input type="button" value="Edit" onclick="editNote(${noteBox[i].id})">`
+      //Creates new div for next entry
+      document.getElementById("showNote").appendChild(newDiv);
+   }
+  }
+}
+
+function editNote(id){
+  var note = document.getElementById(id); //Gets us the specified note
+  note.innerHTML += `<textarea>${note.children[1].innerHTML}</textarea>` //adding the textare to the note
+  note.innerHTML += `<input type="button" value="Save" onclick="saveEdit(${id})">` //adding the button to the note
+}
+
+function saveEdit(id){
+   var note = document.getElementById(id);
+   var edit = note.children[4].value; //getting the value from the textarea
+   note.children[1].innerHTML = edit; //taking the value and displaying it as the value for the note
+   db.exec(`UPDATE notes SET message = '${edit}' WHERE id = ${id}`) //updating the database
+   var result = db.exec(`SELECT * FROM notes`);
+    localStorage.noteBox = JSON.stringify(result); //adding the database to the localstorage
+    note.children[5].remove(); //removes the save button
+    note.children[4].remove(); //removes the textarea
+}
+
+function makeNotes(){
+  var choices = document.getElementById("noteChoices").value;
+  var uchoice = document.getElementById("searchTitle").value;
+  var noteBox = JSON.parse(localStorage.noteBox);
+  document.getElementById("showNote").innerHTML = "";
+   for(var i=0; i < noteBox.length; i++){
+     if(noteBox[i][choices] == uchoice){
+        var newDiv = document.createElement("div");
+        newDiv.id = noteBox[i].id;
+        newDiv.className = "row";
+        newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
+        //Creates new div for next entry
+        document.getElementById("showNote").appendChild(newDiv);
+    }  
+   }
+  }
+
+
+  function removeNote(){
+    var input = document.getElementById("remove").value;
+    var remove = db.exec(`DELETE FROM notes WHERE title = '${input}'`);
+
+    if (remove == 0){
+      alert("Title wasnt found")
+    } else{
+      var result = db.exec(`SELECT * FROM notes`);
+      localStorage.noteBox = JSON.stringify(result);
+      retrieveNote();
     }
 
-    function makeNotes(){
-      var choices = document.getElementById("noteChoices").value;
-      var uchoice = document.getElementById("searchTitle").value;
-      var noteBox = JSON.parse(localStorage.noteBox);
-      document.getElementById("showNote").innerHTML = "";
-      for(var i=0; i < noteBox.length; i++){
-        if(noteBox[i][choices] == uchoice){
-            var newDiv = document.createElement("div");
-            newDiv.className = "row";
-            newDiv.style.backgroundColor = noteBox[i].color;
-            newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
-            newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
-            newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
-            //Creates new div for next entry
-            document.getElementById("showNote").appendChild(newDiv);
-        }  
-      }
+    
+   
+  }
+  
+
+
+  function prioritizeNotes(){
+    var noteBox = JSON.parse(localStorage.noteBox).slice().sort(function(a,b){
+      let colors = ['red', 'yellow', 'green', 'gray'];
+      var colorA = colors.findIndex(function(x){
+        return x === a.color;
+      });  
+      var colorB = colors.findIndex(function(x){
+        return x === b.color;
+      });  
+      return colorA - colorB; 
+    });
+    document.getElementById("showNote").innerHTML = "";
+    for(var i=0; i < noteBox.length; i++){
+        var newDiv = document.createElement("div");
+        newDiv.id = noteBox[i].id;
+        newDiv.className = "row";
+        newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
+        newDiv.innerHTML += `<input type="button" value="Edit" onclick="editNote(${noteBox[i].id})">`
+        //Creates new div for next entry
+        document.getElementById("showNote").appendChild(newDiv);
     }
+  }
 
-      function removeNote(){
-        var input = document.getElementById("remove").value;
-        var remove = db.exec(`DELETE FROM notes WHERE title = '${input}'`);
 
-        if (remove == 0){
-          alert("Title wasnt found")
-        } else{
-          var result = db.exec(`SELECT * FROM notes`);
-          for(var i = 0; i < result.length; i++){
-            db.exec(`UPDATE notes SET id = ${i} WHERE id = ${result[i].id}`)
-            result[i].id = i;
-          }
-
-          localStorage.noteBox = JSON.stringify(result);
-          retrieveNote();
-        }
-      }
-
-      function prioritizeNotes(){
-        var noteBox = JSON.parse(localStorage.noteBox).slice().sort(function(a,b){
-          let colors = ['red', 'yellow', 'green', 'gray'];
-          var colorA = colors.findIndex(function(x){
-            return x === a.color;
-          });  
-          var colorB = colors.findIndex(function(x){
-            return x === b.color;
-          });  
-          return colorA - colorB; 
-        });
-        document.getElementById("showNote").innerHTML = "";
-        for(var i=0; i < noteBox.length; i++){
-            var newDiv = document.createElement("div");
-            newDiv.className = "row";
-            newDiv.style.backgroundColor = noteBox[i].color;
-            newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
-            newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
-            newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
-            //Creates new div for next entry
-            document.getElementById("showNote").appendChild(newDiv);
-        }
-      }
-
-    </script>
+</script>
   </body>
 </html>
