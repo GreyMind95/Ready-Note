@@ -41,7 +41,7 @@
       </div>
        </div>
         </div>
-        
+
     <div class="container-right">
         <div class="row">
             <!--Update Section-->
@@ -63,6 +63,7 @@
             </div>
              </div>
 
+
      <div class="container-center">
         <div class="row">
             <!--Update Section-->
@@ -78,6 +79,11 @@
              </div>
 
 
+<br>
+
+<input type="button" value="Order" onclick="prioritizeNotes()">
+
+
 <div id="showNote" class="container left size">
   
 </div>
@@ -88,6 +94,7 @@ var db = new alasql.Database();
 //Create table for title, date, message, and importance
 db.exec(`CREATE TABLE notes (id int PRIMARY KEY, title varchar(255), color varchar(255), message varchar(255), date varchar(225))`);
 
+
   if(localStorage.noteBox != undefined){
     var store = JSON.parse(localStorage.noteBox);
 
@@ -95,6 +102,7 @@ db.exec(`CREATE TABLE notes (id int PRIMARY KEY, title varchar(255), color varch
       db.exec(`INSERT INTO notes VALUES(${store[i].id}, "${store[i].title}", "${store[i].color}" ,"${store[i].message}", "${store[i].date}")`);
     }
   }
+
 
 
 //Sorts the saved notes by importance.
@@ -132,7 +140,10 @@ document.getElementById("showNote").appendChild(newDiv);
 function retrieveNote(){
   if(localStorage.noteBox != undefined){
    var noteBox = JSON.parse(localStorage.noteBox);
+
    document.getElementById("showNote").innerHTML = "";
+
+
    for(var i=0; i < noteBox.length; i++){
       var newDiv = document.createElement("div");
         newDiv.className = "row";
@@ -146,7 +157,8 @@ function retrieveNote(){
   }
 }
 
-function orderNotes(){
+
+function makeNotes(){
   var choices = document.getElementById("noteChoices").value;
   var uchoice = document.getElementById("searchTitle").value;
   var noteBox = JSON.parse(localStorage.noteBox);
@@ -165,6 +177,7 @@ function orderNotes(){
    }
   }
 
+
   function removeNote(){
     var input = document.getElementById("remove").value;
     var remove = db.exec(`DELETE FROM notes WHERE title = '${input}'`);
@@ -181,6 +194,31 @@ function orderNotes(){
    
   }
   
+
+
+  function prioritizeNotes(){
+    var noteBox = JSON.parse(localStorage.noteBox).slice().sort(function(a,b){
+      let colors = ['red', 'yellow', 'green', 'gray'];
+      var colorA = colors.findIndex(function(x){
+        return x === a.color;
+      });  
+      var colorB = colors.findIndex(function(x){
+        return x === b.color;
+      });  
+      return colorA - colorB; 
+    });
+    document.getElementById("showNote").innerHTML = "";
+    for(var i=0; i < noteBox.length; i++){
+        var newDiv = document.createElement("div");
+        newDiv.className = "row";
+        newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
+        //Creates new div for next entry
+        document.getElementById("showNote").appendChild(newDiv);
+    }
+  }
 
 </script>
 
