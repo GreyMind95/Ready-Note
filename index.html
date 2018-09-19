@@ -74,6 +74,13 @@
                     <input type="button" value="Remove" onclick="removeNote()">
                       <br>
                 </div>
+
+                <div class="col-5">
+                    <h1>Archive Note</h1>
+                    <input id="archive" type="text" placeholder="Enter note title">
+                    <input type="button" value="Remove" onclick="archiveNote()">
+                      <br> <br>
+                </div>
                  </div>
               </div>
              </div>
@@ -86,6 +93,8 @@ var db = new alasql.Database();
 //Create table for title, date, message, and importance
 db.exec(`CREATE TABLE notes (id int PRIMARY KEY, title varchar(255), color varchar(255), message varchar(255), date varchar(225))`);
 
+db.exec(`CREATE TABLE archives (id int PRIMARY KEY, title varchar(255), color varchar(255), message varchar(255), date varchar(225))`);
+
 
   if(localStorage.noteBox != undefined){
     var store = JSON.parse(localStorage.noteBox);
@@ -95,6 +104,13 @@ db.exec(`CREATE TABLE notes (id int PRIMARY KEY, title varchar(255), color varch
     }
   }
 
+   if(localStorage.archiveNotes != undefined){
+    var store = JSON.parse(localStorage.archiveNotes);
+
+    for (var i=0; i < store.length; i++){
+      db.exec(`INSERT INTO notes VALUES(${store[i].id}, "${store[i].title}", "${store[i].color}" ,"${store[i].message}", "${store[i].date}")`);
+    }
+  }
 
 
 //Sorts the saved notes by importance.
@@ -201,10 +217,26 @@ function makeNotes(){
       localStorage.noteBox = JSON.stringify(result);
       retrieveNote();
     }
-
+  }  
     
-   
-  }
+    function archiveNote(){
+      var input = document.getElementById("archive").value;
+      var archive = db.exec(`SELECT * FROM notes WHERE title = '${input}'`);
+
+      if (archive.length == 0){
+      alert("Title wasnt found")
+    } else{
+      db.exec(`INSERT INTO archives VALUES(${archive[0].id}, "${archive[0].title}", "${archive[0].color}" ,"${archive[0].message}", "${archive[0].date}")`);
+      var remove = db.exec(`DELETE FROM notes WHERE title = '${input}'`);
+      var result = db.exec(`SELECT * FROM notes`);
+      localStorage.noteBox = JSON.stringify(result);
+       var result2 = db.exec(`SELECT * FROM notes`);
+      localStorage.archiveNotes = JSON.stringify(result2);
+      
+      retrieveNote();
+    }
+    }
+
   
 
 
