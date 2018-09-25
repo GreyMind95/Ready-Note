@@ -7,13 +7,14 @@
   </head>
 
   <body onload="retrieveNote()">
-  
+  <article>
 <header>
   <div class="container center">
     <h1>Ready Note</h1>
   </div>
 </header>
 <!--Menu option for NotePad-->
+<main>
 <div class="container-div">
     <div class="container left">
       <div class="row">
@@ -57,7 +58,7 @@
             <option value="title">Title</option>
             <option value="color">Color</option>
             <option value="time">Time</option>
-            </select>
+        </select>
             <input id="searchTitle" type="text" placeholder="Enter Selection">
             <input type="button" value="Submit" placeholder="Submit" onclick="makeNotes()">
             
@@ -78,14 +79,28 @@
                 <div class="col-5">
                     <h1>Archive Note</h1>
                     <input id="archive" type="text" placeholder="Enter note title">
-                    <input type="button" value="Remove" onclick="archiveNote()">
+                    <input type="button" value="Archive" onclick="archiveNote()">
                       <br> <br>
                 </div>
                  </div>
               </div>
              </div>
-<br>
-<div id="showNote" class="container left size"></div>
+    <br>
+    <div id="showNote" class="container left size"></div>
+    
+    
+    <div class="container center">
+      <h4>Archive Section</h4>
+      <button onclick="myFunction()">Show</button>
+    </div>
+   
+    <div class="container" id="myDIV" style="display: none;">
+      <div id="showArchive" class="container left size">
+        <h1>HHHHHH</h1>
+      </div>
+    </div>
+  </main>
+</article>
 
 <script src="http://cdn.jsdelivr.net/alasql/latest/alasql.min.js"></script>
 <script>
@@ -104,12 +119,13 @@ db.exec(`CREATE TABLE archives (id int PRIMARY KEY, title varchar(255), color va
     }
   }
 
-   if(localStorage.archiveNotes != undefined){
-    var store = JSON.parse(localStorage.archiveNotes);
+   if(localStorage.archiveNotes != undefined && localStorage.archiveNotes != "undefined"){
+    var archiveStore = JSON.parse(localStorage.archiveNotes);
 
-    for (var i=0; i < store.length; i++){
-      db.exec(`INSERT INTO notes VALUES(${store[i].id}, "${store[i].title}", "${store[i].color}" ,"${store[i].message}", "${store[i].date}")`);
-    }
+    for (var i=0; i < archiveStore.length; i++){
+      db.exec(`INSERT INTO archives VALUES(${archiveStore[i].id}, "${archiveStore[i].title}", "${archiveStore[i].color}" ,"${archiveStore[i].message}", "${archiveStore[i].date}")`);
+    } 
+    viewArchive();
   }
 
 
@@ -126,21 +142,24 @@ function uploadNote(){
   var text = document.getElementById("textBox").value;
   var date = new Date().toString();
   alert("Note has been saved");
-console.log(title, color, text);
+  console.log(title, color, text);
   db.exec(`INSERT INTO notes VALUES(${id}, "${title}", "${color}" ,"${message}", "${date}")`);
-var result = db.exec(`SELECT * FROM notes`);
-localStorage.noteBox = JSON.stringify(result);
+  var result = db.exec(`SELECT * FROM notes`);
+  localStorage.noteBox = JSON.stringify(result);
 
-console.log(JSON.stringify(result));
-//Creates new div for each entry
-var newDiv = document.createElement("div");
-newDiv.id = id;
-newDiv.className = "row";
-newDiv.style.backgroundColor = color;
-newDiv.innerHTML += `<p>${title}</p>`
-// newDiv.innerHTML += `<p>${color}</p>`
-newDiv.innerHTML += `<p>${text}</p>`
-newDiv.innerHTML += `<p>${date}</p>`
+  console.log(JSON.stringify(result));
+  //Creates new div for each entry
+  var newDiv = document.createElement("div");
+  newDiv.id = id;
+  newDiv.className = "row";
+  newDiv.style.backgroundColor = color;
+  newDiv.innerHTML += `<p>${title}</p>`
+  // newDiv.innerHTML += `<p>${color}</p>`
+  newDiv.innerHTML += `<p>${text}</p>`
+  newDiv.innerHTML += `<p>${date}</p>`
+  newDiv.innerHTML += `<input type="button" value="Edit" onclick="editNote(${id})">`
+
+  
 //Creates new div for next entry
 document.getElementById("showNote").appendChild(newDiv);  
 
@@ -226,14 +245,21 @@ function makeNotes(){
       if (archive.length == 0){
       alert("Title wasnt found")
     } else{
-      db.exec(`INSERT INTO archives VALUES(${archive[0].id}, "${archive[0].title}", "${archive[0].color}" ,"${archive[0].message}", "${archive[0].date}")`);
+      var id = db.exec('SELECT * FROM archives').length;
+      db.exec(`INSERT INTO archives VALUES(${id}, "${archive[0].title}", "${archive[0].color}" ,"${archive[0].message}", "${archive[0].date}")`);
       var remove = db.exec(`DELETE FROM notes WHERE title = '${input}'`);
       var result = db.exec(`SELECT * FROM notes`);
+
+      for(var i=0; i < result.length; i++){
+      db.exec(`UPDATE notes SET id = ${i} WHERE id = ${result[i].id}`)
+    }
+      result = db.exec(`SELECT * FROM notes`);
       localStorage.noteBox = JSON.stringify(result);
-       var result2 = db.exec(`SELECT * FROM notes`);
+       var result2 = db.exec(`SELECT * FROM archives`);
       localStorage.archiveNotes = JSON.stringify(result2);
       
       retrieveNote();
+      viewArchive();
     }
     }
 
@@ -264,6 +290,58 @@ function makeNotes(){
         //Creates new div for next entry
         document.getElementById("showNote").appendChild(newDiv);
     }
+  }
+
+  function myFunction() {
+    var x = document.getElementById("myDIV");
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+
+  function viewArchive(){
+    var noteBox = JSON.parse(localStorage.archiveNotes);
+
+   document.getElementById("showArchive").innerHTML = "";
+
+
+   for(var i=0; i < noteBox.length; i++){
+      var newDiv = document.createElement("div");
+      // newDiv.id = noteBox[i].id
+        newDiv.className = "row";
+        newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
+        newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
+        newDiv.innerHTML += `<input type="button" value="Restore" onclick="restore(${noteBox[i].id})">`
+        
+        // newDiv.innerHTML += `<input type="button" value="Edit" onclick="editNote(${noteBox[i].id})">`
+      //Creates new div for next entry
+      document.getElementById("showArchive").appendChild(newDiv);
+   }
+  }
+
+  function restore(id){
+    // var archiveGet = document.getElementById(id);
+    var archiveGet = db.exec(`SELECT * FROM archives WHERE id = ${id}`)[0];
+    var noteId = db.exec('SELECT * FROM notes').length;
+    db.exec(`INSERT INTO notes VALUES(${noteId}, "${archiveGet.title}", "${archiveGet.color}" ,"${archiveGet.message}", "${archiveGet.date}")`);
+    var remove = db.exec(`DELETE FROM archives WHERE id = ${id}`);
+    var result = db.exec(`SELECT * FROM notes`);
+    localStorage.noteBox = JSON.stringify(result);
+
+    var result2 = db.exec(`SELECT * FROM archives`);
+    for(var i=0; i < result2.length; i++){
+      db.exec(`UPDATE archives SET id = ${i} WHERE id = ${result2[i].id}`)
+    }
+    
+    result2 = db.exec(`SELECT * FROM archives`);
+    localStorage.archiveNotes = JSON.stringify(result2);
+    retrieveNote();
+    viewArchive();
+
   }
 
 
