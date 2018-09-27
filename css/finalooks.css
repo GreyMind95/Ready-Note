@@ -90,7 +90,7 @@ font-family: 'Jura', sans-serif;
   height: 200px;
   margin: 5px;
   padding: 10px;
-  color: white;
+  color:white;
   font-family: 'Jura', sans-serif;
 }
 
@@ -106,6 +106,19 @@ font-family: 'Jura', sans-serif;
  border-radius: 15px;
  box-shadow:  0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
  height: 225px;
+}
+
+#set {
+  background-image: url("Wood.jpg");
+  color:white;
+  font-family: 'Jura', sans-serif;
+  font-size: 30px;
+  text-align: center;
+  position: relative;
+  border-radius: 10px;
+  padding: 5px;
+
+
 }
 
 #showNote{
