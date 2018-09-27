@@ -1,50 +1,139 @@
- .center {
-  display: flex;
-  justify-content: center;
+body {
+ background-image: url("Desk.jpg");
+  font-family: Arial, Helvetica, sans-serif;
+  background-repeat: no-repeat;
+  background-size: cover;
+  
 }
-
-.level {
-  display: flex;
-  align-self: flex-start;
+#name {
+  font-family: 'Jura', sans-serif;
+  font-size: 35px;
 }
-.right {
-  display: flex;
-  justify-content: flex-end;
-} */
 
 .grey {
-  background-color: grey;
+
+ background-color: grey;
+ border-radius: 5px 10px 15px 5px;
 }
 
 .red {
-  background-color: red;
+ background-color: red;
+ border-radius: 20px;
 }
 
 .yellow {
-  background-color: yellow;
+ background-color: yellow;
+ border-radius: 5px 10px 15px 5px;
 }
 
 .green {
-  background-color: green;
+ background-color: green;
+ border-radius: 5px 10px 15px 5px;
 }
 
 .container-div {
-  display: flex;
+ display: flex;
 
-}
-.left {
-  flex: .5;
-}
-
-.right {
-  flex: .5;
-}
-
-.middle {
-  flex: 1;
 }
 
 .size {
-  height:auto;
-  width: 45%;
+ height:auto;
+ width: 45%;
+}
+
+
+#titleShow {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ box-shadow:  0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+ background-image: url("Wood.jpg");
+ background-position: center;
+ height: 100px;
+ margin: 10px;
+ padding: 10px;
+ border-radius: 20px;
+ font-family: 'Jura', sans-serif;
+ font-size: 30px;
+ color: white;
+position: relative;
+}
+
+#noteEntry {
+ display: flex;
+ justify-content: flex-start;
+ background-image: url("Wood.jpg");
+ box-shadow:  0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+ height: 250px;
+ width:300px
+
+}
+
+#middle{
+ display: flex;
+ flex-direction: row;
+ background-image: url("Wood.jpg");
+ border-radius: 15px;
+box-shadow:  0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+height: 200px;
+margin: 5px;
+padding: 10px;
+color: white;
+font-family: 'Jura', sans-serif;
+}
+
+#next {
+  display: flex;
+  background-image: url("Wood.jpg");
+  border-radius: 15px;
+  box-shadow:  0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  height: 200px;
+  margin: 5px;
+  padding: 10px;
+  color: white;
+  font-family: 'Jura', sans-serif;
+}
+
+#hello{
+
+  background-image: url("Wood.jpg");
+ border-radius: 15px;
+ box-shadow:  0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#get{
+  background-image: url("Wood.jpg");
+ border-radius: 15px;
+ box-shadow:  0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+ height: 225px;
+}
+
+#showNote{
+ height: 50%;
+ width : 450px;
+ padding:10px;
+
+}
+
+#myDIV{
+  background-image: url("Wood.jpg");
+  border-radius: 15px;
+  box-shadow:  0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.contents{
+  text-align: center;
+  font-family: 'Jura', sans-serif;
+}
+.input-box{
+  text-align: center;
+  margin: 0 auto;
+}
+.container{
+color:white;
+text-align: center;
+margin: 0 auto; 
+}
+.archive-box{
+  text-align: center;
+  margin: 0 auto;
 }

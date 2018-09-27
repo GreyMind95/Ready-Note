@@ -3,54 +3,87 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/finalooks.css">
+    <link href="https://fonts.googleapis.com/css?family=Jura" rel="stylesheet">
     <title></title>
   </head>
-
+  
   <body onload="retrieveNote()">
-  <article>
-<header>
-  <div class="container center">
+
+  <div id="container">
+
+
+<header id="titleShow">
+  <div>
     <h1>Ready Note</h1>
   </div>
 </header>
+<br>
 <!--Menu option for NotePad-->
-<main>
+
 <div class="container-div">
-    <div class="container left">
-      <div class="row">
+
+    <div id="hello" class="container">
         <!--Input Section-->
-        <div class="col-5">
-          <h1>Start New Note</h1>
+        <!-- I removed the col 5 and replaced it with class contentss CSS style to center the contents -->
+        <div  class="contents">
+          <h1> New Note</h1>
       <!--Create name of Note-->
             <input id="nameTitle" type="text" placeholder="Enter Title">
       <!--Select Importance of Note by color-->
-              <select id="colorCode">
+              <select id="colorCode" >
               <option>-Status Code-</option>
               <option value="red">Red</option>
               <option value="yellow">Yellow</option>
               <option value="green">Green</option>
               <option value="gray">Gray</option>
               </select>
+              <div>
                 <input type="button" value="Submit" onclick="uploadNote()">
                 <input type="button" value="Order" onclick="prioritizeNotes()">
+              </div>
 
                   <br>
-          <div class="col">
+          <div class="col" class="input-box">
           <textarea id="textBox" name="advanced"
             rows="10" cols="60" maxlength="200"
             wrap="hard">
           </textarea>
           </div>
         </div>
+
+       
+       <div id="showNote" class="container size"></div>
        </div>
-       <div id="showNote" class="container left size"></div>
+        
+        <div id="middle">
+
+                  <div class="archive-box">
+                    <h1>Remove Note</h1>
+                    <div class="archive-box">
+                    <input id="remove" type="text" placeholder="Enter note title">
+                    <input type="button" value="Remove" onclick="removeNote()">
+                    </div>
+                      <br>
+                </div>
         </div>
-        <hr>
+
+          <div id="next" >
+                <div class="archive-box">
+                    <h1>Archive Note</h1>
+                    <div class="archive-box">
+                    <input id="archive" type="text" placeholder="Enter note title">
+                    <input type="button" value="Archive" onclick="archiveNote()">
+                    </div>
+                      <br> 
+                </div>
+              </div>
+              
+        
 <!--Retrieve & Edit Note Section-->
-    <div class="container-right">
-        <div class="row">
-            <div class="col-5">
-            <h1>Retrieve Note Section</h1>
+    <div id="get" class="container">
+
+            <div class="contents">
+            <h1>Retrieve Note </h1>
         <!--Search name of Note-->
         <!--Change Importance of Note by color-->
         <select id="noteChoices">
@@ -61,46 +94,31 @@
         </select>
             <input id="searchTitle" type="text" placeholder="Enter Selection">
             <input type="button" value="Submit" placeholder="Submit" onclick="makeNotes()">
-            
+
             <br>
           </div>
-           </div>
             </div>
-            <hr>
-            <div class="container-middle">
-                <div class="row">
-                  <div class="col-5">
-                    <h1>Remove Note</h1>
-                    <input id="remove" type="text" placeholder="Enter note title">
-                    <input type="button" value="Remove" onclick="removeNote()">
-                      <br>
-                </div>
+            </div>
 
-                <div class="col-5">
-                    <h1>Archive Note</h1>
-                    <input id="archive" type="text" placeholder="Enter note title">
-                    <input type="button" value="Archive" onclick="archiveNote()">
-                      <br> <br>
-                </div>
-                 </div>
-              </div>
              </div>
     <br>
-    <div id="showNote" class="container left size"></div>
-    
-    
+
+
+    <div id="showNote" class="container size"></div>
+
+
     <div class="container center">
       <h4>Archive Section</h4>
       <button onclick="myFunction()">Show</button>
     </div>
-   
+
     <div class="container" id="myDIV" style="display: none;">
       <div id="showArchive" class="container left size">
         <h1>HHHHHH</h1>
       </div>
     </div>
-  </main>
-</article>
+  </div>
+
 
 <script src="http://cdn.jsdelivr.net/alasql/latest/alasql.min.js"></script>
 <script>
@@ -124,7 +142,7 @@ db.exec(`CREATE TABLE archives (id int PRIMARY KEY, title varchar(255), color va
 
     for (var i=0; i < archiveStore.length; i++){
       db.exec(`INSERT INTO archives VALUES(${archiveStore[i].id}, "${archiveStore[i].title}", "${archiveStore[i].color}" ,"${archiveStore[i].message}", "${archiveStore[i].date}")`);
-    } 
+    }
     viewArchive();
   }
 
@@ -134,7 +152,7 @@ db.exec(`CREATE TABLE archives (id int PRIMARY KEY, title varchar(255), color va
 
 
 function uploadNote(){
-  
+
   var id = db.exec('SELECT * FROM notes').length;
   var title = document.getElementById("nameTitle").value;
   var message = document.getElementById("textBox").value;
@@ -152,16 +170,20 @@ function uploadNote(){
   var newDiv = document.createElement("div");
   newDiv.id = id;
   newDiv.className = "row";
+  newDiv.style.margin= "8px"
+  newDiv.style.padding= "10px"
   newDiv.style.backgroundColor = color;
+  newDiv.style.borderRadius = "25px"; //adds border radius to each newDiv
+
   newDiv.innerHTML += `<p>${title}</p>`
   // newDiv.innerHTML += `<p>${color}</p>`
   newDiv.innerHTML += `<p>${text}</p>`
   newDiv.innerHTML += `<p>${date}</p>`
   newDiv.innerHTML += `<input type="button" value="Edit" onclick="editNote(${id})">`
 
-  
+
 //Creates new div for next entry
-document.getElementById("showNote").appendChild(newDiv);  
+document.getElementById("showNote").appendChild(newDiv);
 
 }
 //Loads stored entries onto webpage
@@ -177,6 +199,9 @@ function retrieveNote(){
       newDiv.id = noteBox[i].id
         newDiv.className = "row";
         newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.style.borderRadius = "25px";
+        newDiv.style.margin= "8px"
+        newDiv.style.padding= "10px"
         newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
         newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
         newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
@@ -215,12 +240,15 @@ function makeNotes(){
         newDiv.id = noteBox[i].id;
         newDiv.className = "row";
         newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.style.borderRadius = "25px";
+        newDiv.style.margin= "8px"
+        newDiv.style.padding= "10px"
         newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
         newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
         newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
         //Creates new div for next entry
         document.getElementById("showNote").appendChild(newDiv);
-    }  
+    }
    }
   }
 
@@ -236,8 +264,8 @@ function makeNotes(){
       localStorage.noteBox = JSON.stringify(result);
       retrieveNote();
     }
-  }  
-    
+  }
+
     function archiveNote(){
       var input = document.getElementById("archive").value;
       var archive = db.exec(`SELECT * FROM notes WHERE title = '${input}'`);
@@ -257,13 +285,13 @@ function makeNotes(){
       localStorage.noteBox = JSON.stringify(result);
        var result2 = db.exec(`SELECT * FROM archives`);
       localStorage.archiveNotes = JSON.stringify(result2);
-      
+
       retrieveNote();
       viewArchive();
     }
     }
 
-  
+
 
 
   function prioritizeNotes(){
@@ -271,11 +299,11 @@ function makeNotes(){
       let colors = ['red', 'yellow', 'green', 'gray'];
       var colorA = colors.findIndex(function(x){
         return x === a.color;
-      });  
+      });
       var colorB = colors.findIndex(function(x){
         return x === b.color;
-      });  
-      return colorA - colorB; 
+      });
+      return colorA - colorB;
     });
     document.getElementById("showNote").innerHTML = "";
     for(var i=0; i < noteBox.length; i++){
@@ -283,6 +311,9 @@ function makeNotes(){
         newDiv.id = noteBox[i].id;
         newDiv.className = "row";
         newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.style.borderRadius = "25px";
+        newDiv.style.margin= "8px"
+        newDiv.style.padding= "10px"
         newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
         newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
         newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
@@ -312,11 +343,14 @@ function makeNotes(){
       // newDiv.id = noteBox[i].id
         newDiv.className = "row";
         newDiv.style.backgroundColor = noteBox[i].color;
+        newDiv.style.borderRadius = "25px";
+        newDiv.style.margin= "8px"
+        newDiv.style.padding= "10px"
         newDiv.innerHTML += `<p>${noteBox[i].title}</p>`
         newDiv.innerHTML += `<p>${noteBox[i].message}</p>`
         newDiv.innerHTML += `<p>${noteBox[i].date}</p>`
         newDiv.innerHTML += `<input type="button" value="Restore" onclick="restore(${noteBox[i].id})">`
-        
+
         // newDiv.innerHTML += `<input type="button" value="Edit" onclick="editNote(${noteBox[i].id})">`
       //Creates new div for next entry
       document.getElementById("showArchive").appendChild(newDiv);
@@ -336,7 +370,7 @@ function makeNotes(){
     for(var i=0; i < result2.length; i++){
       db.exec(`UPDATE archives SET id = ${i} WHERE id = ${result2[i].id}`)
     }
-    
+
     result2 = db.exec(`SELECT * FROM archives`);
     localStorage.archiveNotes = JSON.stringify(result2);
     retrieveNote();
